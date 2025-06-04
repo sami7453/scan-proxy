@@ -1,28 +1,28 @@
 // api/tags.js
-import { V2 as cloudinary } from 'cloudinary';
+const cloudinary = require('cloudinary').v2;
 
 cloudinary.config({
     cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
     api_key: process.env.CLOUDINARY_API_KEY,
-    api_secret: process.env.CLOUDINARY_API_SECRET
+    api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
-export default async function handler(req, res) {
+module.exports = async (req, res) => {
     res.setHeader('Access-Control-Allow-Origin', '*');
 
-    const { title } = req.query;  // exemple : "titre:CrownMaster"
+    const { title } = req.query; // ex. "titre:CrownMaster"
     if (!title) {
         return res.status(400).json({ error: 'Missing title parameter' });
     }
 
     try {
-        // Récupère toutes les ressources qui ont le tag “title”
+        // Récupère toutes les ressources portant ce tag "title"
         const byTitle = await cloudinary.api.resources_by_tag(title, {
             max_results: 500,
             tags: true
         });
 
-        // Extraire tous les tags “chapX” de ces ressources
+        // Extrait tous les chap-tags (qui commencent par "chap")
         const chapSet = new Set();
         byTitle.resources.forEach(r => {
             r.tags.forEach(t => {
@@ -30,7 +30,7 @@ export default async function handler(req, res) {
             });
         });
 
-        // Convertir en tableau trié numériquement (“chap1”, “chap2”, …)
+        // Trie numérique ("chap1","chap2",…)
         const chapList = Array.from(chapSet).sort((a, b) => {
             const na = parseInt(a.replace(/^chap/, ''), 10);
             const nb = parseInt(b.replace(/^chap/, ''), 10);
@@ -42,4 +42,4 @@ export default async function handler(req, res) {
         console.error('Error in /api/tags:', err);
         res.status(500).json({ error: err.message });
     }
-}
+};
