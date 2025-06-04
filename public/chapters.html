@@ -156,7 +156,7 @@
                 slideNav.style.marginTop = '10px';
 
                 const prevButton = document.createElement('button');
-                prevButton.textContent = '<';
+                prevButton.textContent = '';
                 prevButton.classList.add('slide-nav-btn-prev');
                 prevButton.addEventListener('click', () => {
                     if (currentSlide > 0) {
@@ -166,7 +166,7 @@
                 });
 
                 const nextButton = document.createElement('button');
-                nextButton.textContent = '>';
+                nextButton.textContent = '';
                 nextButton.classList.add('slide-nav-btn-next');
                 nextButton.addEventListener('click', () => {
                     if (currentSlide < totalSlides - 1) {
