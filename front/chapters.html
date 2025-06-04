@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Chapitres</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <!-- Optional: Include a library for icons if you don't want to use a simple character -->
+    <!-- Example using Font Awesome (replace with a different library if preferred) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+</head>
+
+<body>
+    <div class="chapters-container">
+        <header class="chapters-header">
+            <div class="title-and-back">
+                <button id="back-to-works" class="back-button">
+                    <span class="arrow-icon">&#8592;</span> <!-- Left arrow character -->
+                    Retour
+                </button>
+                <h1 id="work-title">Chapitres</h1>
+            </div>
+            <div class="controls">
+                <select id="chapitre"></select>
+                <div class="reading-mode-buttons">
+                    <button data-mode="classic" class="active">Classique</button>
+                    <button data-mode="two-per-page">Deux par page</button>
+                    <button data-mode="slide">Glisser</button>
+                </div>
+            </div>
+        </header>
+        <div id="pages">Chargement…</div>
+
+        <footer class="chapter-footer">
+            <button id="back-to-top">Retour en haut</button>
+            <button id="next-chapter" disabled>Chapitre suivant</button>
+        </footer>
+    </div>
+
+    <script>
+        const params = new URLSearchParams(location.search);
+        const titleTag = params.get('title') || '';
+        document.getElementById('work-title').textContent = titleTag.replace(/^titre:/, '');
+        const sel = document.getElementById('chapitre');
+        const pagesContainer = document.getElementById('pages');
+        const readingModeButtons = document.querySelectorAll('.reading-mode-buttons button');
+        const backToTopButton = document.getElementById('back-to-top');
+        const nextChapterButton = document.getElementById('next-chapter');
+        const backToWorksButton = document.getElementById('back-to-works'); // Get the new button
+
+        let currentReadingMode = 'classic'; // Default mode
+        let allChapters = []; // To store all chapter tags
+        let currentChapterIndex = -1; // To track the current chapter index
+
+        async function loadChapters() {
+            try {
+                const res = await fetch(`http://localhost:3000/api/tags?title=${encodeURIComponent(titleTag)}`);
+                if (!res.ok) throw new Error(res.statusText);
+                allChapters = await res.json(); // Store all chapters
+                if (!allChapters.length) {
+                    sel.innerHTML = '<option>Aucun chapitre</option>';
+                    pagesContainer.textContent = 'Pas d’images à afficher.';
+                    nextChapterButton.disabled = true;
+                    return;
+                }
+                sel.innerHTML = allChapters.map(t => `<option value="${t}">${t.replace(/^chap/, 'Chapitre ')}</option>`).join('');
+
+                // Load the first chapter and set the initial index
+                currentChapterIndex = 0;
+                loadGallery(allChapters[currentChapterIndex]);
+                updateNextChapterButtonState();
+
+            } catch (err) {
+                sel.innerHTML = '<option>Erreur</option>';
+                pagesContainer.textContent = 'Erreur chargement chapitres.';
+                console.error(err);
+                nextChapterButton.disabled = true;
+            }
+        }
+
+        async function loadGallery(chapTag) {
+            pagesContainer.textContent = 'Chargement…';
+            try {
+                const res = await fetch(
+                    `http://localhost:3000/api/list?title=${encodeURIComponent(titleTag)}&chap=${encodeURIComponent(chapTag)}`
+                );
+                if (!res.ok) throw new Error(res.statusText);
+                const images = await res.json();
+                if (!images.length) {
+                    pagesContainer.textContent = 'Aucune image pour ce chapitre.';
+                    return;
+                }
+
+                applyReadingMode(currentReadingMode, images);
+
+            } catch (err) {
+                pagesContainer.textContent = 'Erreur : ' + err.message;
+                console.error(err);
+            }
+        }
+
+        function applyReadingMode(mode, images) {
+            // Remove previous mode classes
+            pagesContainer.classList.remove('two-per-page');
+            pagesContainer.innerHTML = ''; // Clear previous images
+
+            if (!images || images.length === 0) {
+                pagesContainer.textContent = 'Aucune image pour ce chapitre.';
+                return;
+            }
+
+            if (mode === 'classic') {
+                images.forEach(img => {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = img.url;
+                    imgElement.alt = `Page ${img.id.split('/').pop()}`;
+                    pagesContainer.appendChild(imgElement);
+                });
+            } else if (mode === 'two-per-page') {
+                pagesContainer.classList.add('two-per-page');
+                images.forEach(img => {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = img.url;
+                    imgElement.alt = `Page ${img.id.split('/').pop()}`;
+                    pagesContainer.appendChild(imgElement);
+                });
+            } else if (mode === 'slide') {
+                const slideContainer = document.createElement('div');
+                slideContainer.classList.add('slide-container');
+                const slideWrapper = document.createElement('div');
+                slideWrapper.classList.add('slide-wrapper');
+
+                images.forEach(img => {
+                    const imgElement = document.createElement('img');
+                    imgElement.src = img.url;
+                    imgElement.alt = `Page ${img.id.split('/').pop()}`;
+                    slideWrapper.appendChild(imgElement);
+                });
+
+                slideContainer.appendChild(slideWrapper);
+                pagesContainer.appendChild(slideContainer);
+
+                // Basic slide functionality
+                let currentSlide = 0;
+                const totalSlides = images.length;
+
+                const updateSlidePosition = () => {
+                    slideWrapper.style.transform = `translateX(${-currentSlide * 100}%)`;
+                };
+
+                // Optional navigation buttons within the slide mode
+                const slideNav = document.createElement('div');
+                slideNav.style.textAlign = 'center';
+                slideNav.style.marginTop = '10px';
+
+                const prevButton = document.createElement('button');
+                prevButton.className = 'slide-nav-btn-prev';
+
+
+                const nextButton = document.createElement('button');
+                nextButton.className = 'slide-nav-btn-next';
+
+
+
+                prevButton.addEventListener('click', () => {
+                    if (currentSlide > 0) {
+                        currentSlide--;
+                        updateSlidePosition();
+                    }
+                });
+
+                nextButton.addEventListener('click', () => {
+                    if (currentSlide < totalSlides - 1) {
+                        currentSlide++;
+                        updateSlidePosition();
+                    }
+                });
+
+                slideNav.appendChild(prevButton);
+                slideNav.appendChild(nextButton);
+                pagesContainer.appendChild(slideNav);
+
+            }
+        }
+
+        function updateNextChapterButtonState() {
+            if (currentChapterIndex < allChapters.length - 1) {
+                nextChapterButton.disabled = false;
+            } else {
+                nextChapterButton.disabled = true;
+            }
+        }
+
+
+        // Event listener for chapter selection
+        sel.addEventListener('change', () => {
+            const selectedChapterTag = sel.value;
+            currentChapterIndex = allChapters.indexOf(selectedChapterTag); // Update index
+            loadGallery(selectedChapterTag);
+            updateNextChapterButtonState();
+        });
+
+        // Event listeners for reading mode buttons
+        readingModeButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                // Update active button class
+                readingModeButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+
+                // Set current mode and re-render gallery
+                currentReadingMode = button.dataset.mode;
+                // Re-load the current chapter to apply the new mode
+                loadGallery(sel.value);
+            });
+        });
+
+        // Event listener for "Back to Top" button
+        backToTopButton.addEventListener('click', () => {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth' // Smooth scrolling animation
+            });
+        });
+
+        // Event listener for "Next Chapter" button
+        nextChapterButton.addEventListener('click', () => {
+            if (currentChapterIndex < allChapters.length - 1) {
+                currentChapterIndex++;
+                const nextChapterTag = allChapters[currentChapterIndex];
+                sel.value = nextChapterTag; // Update the select dropdown
+                loadGallery(nextChapterTag);
+                updateNextChapterButtonState();
+                window.scrollTo({
+                    top: 0,
+                    behavior: 'smooth' // Scroll to top when changing chapter
+                });
+            }
+        });
+
+        // Event listener for "Back to Works" button
+        backToWorksButton.addEventListener('click', () => {
+            window.history.back(); // Go back to the previous page in history (should be the home page)
+        });
+
+
+        window.addEventListener('DOMContentLoaded', loadChapters);
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,377 @@
+:root {
+    --primary-color: #5a189a;
+    /* A modern purple */
+    --secondary-color: #7b2cbf;
+    /* A slightly lighter purple */
+    --text-color: #333;
+    --background-color: #f3e5f5;
+    /* A light purple background */
+    --card-background: #ffffff;
+    --shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    --border-radius: 8px;
+}
+
+body {
+    font-family: "Roboto", sans-serif;
+    /* Using a common modern font */
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+h1,
+h2 {
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 1.5rem;
+}
+
+a {
+    text-decoration: none;
+    color: var(--primary-color);
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--secondary-color);
+}
+
+/* Specific styles for the home page */
+.home-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+/* Sliding Hero Styles */
+.hero-slider {
+    position: relative;
+    overflow: hidden;
+    width: 100%;
+    height: 400px;
+    /* Adjust height as needed */
+    border-radius: var(--border-radius);
+    margin-bottom: 3rem;
+    box-shadow: var(--shadow);
+}
+
+.hero-slide {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 1s ease-in-out;
+}
+
+.hero-slide.active {
+    opacity: 1;
+}
+
+.hero-slide img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    /* Ensure image covers the area */
+}
+
+/* When only one work exists */
+.single-hero img {
+    display: block;
+    width: 100%;
+    height: auto;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    margin-bottom: 3rem;
+}
+
+
+/* Works Grid Styles */
+#works {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    /* Slightly larger cards */
+    gap: 2rem;
+}
+
+.work-card {
+    background: var(--card-background);
+    border-radius: var(--border-radius);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    text-align: center;
+    transition: transform 0.3s ease;
+}
+
+.work-card:hover {
+    transform: translateY(-5px);
+}
+
+.work-card img {
+    width: 100%;
+    height: 200px;
+    /* Fixed height for consistent cards */
+    object-fit: cover;
+    display: block;
+}
+
+.work-card h2 {
+    margin: 1rem 0.5rem;
+    font-size: 1.2rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.work-card a {
+    display: block;
+}
+
+/* Specific styles for the chapters page */
+.chapters-container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+
+.chapters-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.chapters-header .title-and-back {
+    display: flex;
+    align-items: center;
+    flex-grow: 1;
+    margin-right: 1rem;
+}
+
+.chapters-header h1 {
+    margin: 0;
+    text-align: center;
+    flex-grow: 1;
+}
+
+.back-button {
+    display: flex;
+    align-items: center;
+    padding: 0.5rem 1rem;
+    font-size: 1rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--primary-color);
+    background-color: white;
+    color: var(--primary-color);
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.back-button:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.back-button .arrow-icon {
+    margin-right: 0.5rem;
+    font-size: 1.2rem;
+    /* Adjust size as needed */
+}
+
+
+.controls {
+    display: flex;
+    gap: 1rem;
+    align-items: center;
+}
+
+select {
+    padding: 0.75rem;
+    font-size: 1rem;
+    border-radius: var(--border-radius);
+    border: 1px solid #ccc;
+    background-color: white;
+    cursor: pointer;
+}
+
+.reading-mode-buttons button {
+    padding: 0.75rem 1.25rem;
+    font-size: 1rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--primary-color);
+    background-color: white;
+    color: var(--primary-color);
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.reading-mode-buttons button.active,
+.reading-mode-buttons button:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+
+#pages {
+    min-height: 200px;
+    /* Increased min-height */
+    font-style: italic;
+    text-align: center;
+}
+
+/* Reading Mode: Classic (one image under the other) - Default */
+#pages img {
+    display: block;
+    width: 100%;
+    max-width: 720px;
+    /* Limit max width even in classic mode */
+    margin: 0 auto 1.5rem auto;
+    /* Center images */
+    box-shadow: var(--shadow);
+    border-radius: var(--border-radius);
+    background: white;
+}
+
+/* Reading Mode: Two per page */
+#pages.two-per-page {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    /* Two columns */
+    gap: 1.5rem;
+}
+
+#pages.two-per-page img {
+    width: 100%;
+    height: auto;
+    /* Allow height to adjust */
+    max-width: none;
+    /* Remove max width restriction */
+    margin: 0 auto;
+}
+
+/* Reading Mode: Slide (Not purely CSS, but we'll style for a slider container) */
+.slide-container {
+    overflow: hidden;
+    width: 75%;
+    margin-left: 12%;
+}
+
+.slide-wrapper {
+    display: flex;
+    transition: transform 0.5s ease-in-out;
+}
+
+.slide-wrapper img {
+    width: 100%;
+    flex-shrink: 0;
+    /* Prevent images from shrinking */
+    max-width: 960px;
+    /* Max width for slide mode */
+    margin: 0 auto;
+}
+
+.chapter-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 3rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid #ccc;
+    /* A subtle line to separate content */
+}
+
+.chapter-footer button {
+    padding: 0.75rem 1.5rem;
+    font-size: 1rem;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--primary-color);
+    background-color: white;
+    color: var(--primary-color);
+    cursor: pointer;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.chapter-footer button:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.chapter-footer button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    background-color: #f0f0f0;
+    color: #999;
+    border-color: #ccc;
+}
+
+.slide-nav-btn-next {
+    position: absolute;
+    z-index: 10;
+    border: none;
+    background: none;
+    width: 50%;
+    top: 0;
+    right: 0;
+    height: 124%;
+    margin-top: 18%;
+}
+
+.slide-nav-btn-prev {
+    position: absolute;
+    z-index: 10;
+    border: none;
+    background: none;
+    width: 50%;
+    top: 0;
+    left: 0;
+    height: 124%;
+    margin-top: 18%;
+}
+
+
+
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .hero-slider {
+        height: 300px;
+    }
+
+    #works {
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 1rem;
+    }
+
+    .work-card img {
+        height: 150px;
+    }
+
+    .chapters-header {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .chapters-header h1 {
+        margin-bottom: 1rem;
+        margin-right: 0;
+    }
+
+    .controls {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.75rem;
+    }
+
+    .reading-mode-buttons {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+
+
+}
