@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Mes Mangas</title>
+    <link rel="stylesheet" href="style.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class="home-container">
+        <h1>Mes Mangas</h1>
+
+        <div id="hero-section">
+            <!-- Le slider ou l’image unique s’insérera ici -->
+        </div>
+
+        <div id="works">Chargement…</div>
+    </div>
+
+    <script>
+        async function loadWorks() {
+            const heroSection = document.getElementById('hero-section');
+            const container = document.getElementById('works');
+            try {
+                // ↳ Modifié ici : appel en relatif (pas besoin de http://localhost:3000)
+                const res = await fetch('/api/works');
+                if (!res.ok) throw new Error(res.statusText);
+                const works = await res.json();
+
+                // Si aucune œuvre, on affiche un message
+                if (works.length === 0) {
+                    heroSection.innerHTML = '';
+                    container.textContent = 'Aucun manga trouvé.';
+                    return;
+                }
+
+                // Si exactement une œuvre, on affiche sa couverture en “hero” tout seul
+                if (works.length === 1) {
+                    heroSection.innerHTML = `
+            <div class="single-hero">
+              <img src="${works[0].coverUrl}" alt="Cover ${works[0].title}">
+            </div>
+          `;
+                } else {
+                    // Plusieurs œuvres → on crée un slider basique
+                    heroSection.innerHTML = `
+            <div class="hero-slider">
+              ${works.map((w, index) => `
+                <div class="hero-slide ${index === 0 ? 'active' : ''}">
+                  <img src="${w.coverUrl}" alt="Cover ${w.title}">
+                </div>
+              `).join('')}
+            </div>
+          `;
+                    // Fonctionnalité minimale de slider (rafraîchissement toutes les 5s)
+                    const slides = heroSection.querySelectorAll('.hero-slide');
+                    let currentSlide = 0;
+                    setInterval(() => {
+                        slides[currentSlide].classList.remove('active');
+                        currentSlide = (currentSlide + 1) % slides.length;
+                        slides[currentSlide].classList.add('active');
+                    }, 5000);
+                }
+
+                // Enfin, on construit la grille de “work-card”
+                container.innerHTML = works.map(w => `
+          <div class="work-card">
+            <a href="chapters.html?title=${encodeURIComponent(w.tag)}">
+              <img src="${w.coverUrl}" alt="Cover ${w.title}">
+              <h2>${w.title}</h2>
+            </a>
+          </div>
+        `).join('');
+
+            } catch (err) {
+                heroSection.innerHTML = '';
+                container.textContent = 'Erreur : ' + err.message;
+                console.error(err);
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', loadWorks);
+    </script>
+</body>
+
+</html>
