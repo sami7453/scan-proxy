@@ -1,15 +1,13 @@
 :root {
-    --primary-color: #5a189a;
-    /* A modern purple */
-    --secondary-color: #7b2cbf;
-    /* A slightly lighter purple */
-    --text-color: #333;
-    --background-color: #f3e5f5;
-    /* A light purple background */
-    --card-background: #ffffff;
-    --shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    --primary-color: #C92924;
+    --secondary-color: #F9E7C9;
+    --background-color: #F9E7C9;
+    --text-color: #280B0B;
+    --card-background: #F9E7C9;
+    --shadow: 0px 28px 50px rgba(13, 39, 80, 0.16);
     --border-radius: 8px;
 }
+
 
 body {
     font-family: "Roboto", sans-serif;
