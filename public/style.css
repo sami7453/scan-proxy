@@ -240,9 +240,8 @@ select {
 /* Reading Mode: Two per page */
 #pages.two-per-page {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    /* Two columns */
-    gap: 1.5rem;
+    row-gap: 1.5rem;
+    grid-template-columns: repeat(2, 1fr);
 }
 
 #pages.two-per-page img {
